@@ -9,15 +9,15 @@
 
 const char* device_type(struct stat* sb) {
     switch (sb->st_mode & S_IFMT) {
-        case S_IFBLK:   return "блочное устройство";
-        case S_IFCHR:   return "символьное устройство";
-        case S_IFDIR:   return "каталог";
-        case S_IFIFO:   return "FIFO/канал";
-        case S_IFLNK:   return "символьная ссылка";
-        case S_IFREG:   return "обычный файл";
-        case S_IFSOCK:  return "сокет";
+        case S_IFBLK:   return "block device";
+        case S_IFCHR:   return "character device";
+        case S_IFDIR:   return "directory";
+        case S_IFIFO:   return "FIFO/channel";
+        case S_IFLNK:   return "symbolic link";
+        case S_IFREG:   return "regular file";
+        case S_IFSOCK:  return "socket";
     }
-    return "неизвестно";
+    return "unknown";
 }
 
 
