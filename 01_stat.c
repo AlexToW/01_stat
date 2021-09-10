@@ -50,14 +50,22 @@ int main(int argc, char* argv[]) {
     struct tm current_time;
     char buf[26];
 
+    const char fmt[] = "%a %b %d %H:%M:%S %Y";
     current_time = *gmtime_r(&sb.st_ctime, &current_time);
-    printf("C_TIME                  %s", asctime_r(&current_time, buf));
-
+    if(!strftime(buf, 26, fmt, &current_time)) {
+        exit(EXIT_FAILURE);
+    }
+    printf("C_TIME                  %s\n", buf);
     current_time = *gmtime_r(&sb.st_atime, &current_time);
-    printf("A_TIME                  %s", asctime_r(&current_time, buf));
-
+    if(!strftime(buf, 26, fmt, &current_time)){
+        exit(EXIT_FAILURE);
+    }
+    printf("A_TIME                  %s\n", buf);
     current_time = *gmtime_r(&sb.st_mtime, &current_time);
-    printf("M_TIME                  %s", asctime_r(&current_time, buf));
+    if(!strftime(buf, 26, fmt, &current_time)) {
+        exit(EXIT_FAILURE);
+    }
+    printf("M_TIME                  %s\n", buf);
 
     return 0;
 }
