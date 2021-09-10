@@ -34,19 +34,16 @@ int main(int argc, char* argv[]) {
         exit(EXIT_FAILURE);
     }
 
-    printf("Тип файла:              %s\n", device_type(sb.st_mode));
-    printf("инода:                  %ld\n", (long)sb.st_ino);
-    printf("Режим доступа:          %lo (octal)\n", (unsigned long)sb.st_mode);
-    printf("Кол-во ссылок:          %ld\n", (long)sb.st_nlink);
-    printf("владелец:               UID=%ld\tGID=%ld\n", (long)sb.st_uid, (long)sb.st_gid);
-    printf("Предпочт. размер блока: %ld байт\n", (long)sb.st_blksize);
-    printf("Размер файла:           %lld байт\n", (long long)sb.st_size);
-    printf("Выделено блоков:        %lld\n", (long long)sb.st_blocks);
+    printf("File type:              %s\n", device_type(sb.st_mode));
+    printf("INode:                  %ld\n", (long)sb.st_ino);
+    printf("Access mode:            %lo (octal)\n", (unsigned long)sb.st_mode);
+    printf("number of links:        %ld\n", (long)sb.st_nlink);
+    printf("Owner:                  UID=%ld\tGID=%ld\n", (long)sb.st_uid, (long)sb.st_gid);
+    printf("preferred block size:   %ld byte\n", (long)sb.st_blksize);
+    printf("File size:              %lld byte\n", (long long)sb.st_size);
+    printf("Allocated blocks:       %lld\n", (long long)sb.st_blocks);
 
-    /*
-    struct tm* current_time = (struct tm*)malloc(sizeof(struct tm));
-    char* buf = (char*)malloc(26 * sizeof(char));
-    */
+
     struct tm current_time;
     char buf[26];
 
