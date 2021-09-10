@@ -7,8 +7,8 @@
 #include <errno.h>
 
 
-const char* device_type(struct stat* sb) {
-    switch (sb->st_mode & S_IFMT) {
+const char* device_type(const mode_t mode) {
+    switch (mode & S_IFMT) {
         case S_IFBLK:   return "block device";
         case S_IFCHR:   return "character device";
         case S_IFDIR:   return "directory";
@@ -34,7 +34,7 @@ int main(int argc, char* argv[]) {
         exit(EXIT_FAILURE);
     }
 
-    printf("Тип файла:              %s\n", device_type(&sb));
+    printf("Тип файла:              %s\n", device_type(sb.st_mode));
     printf("инода:                  %ld\n", (long)sb.st_ino);
     printf("Режим доступа:          %lo (octal)\n", (unsigned long)sb.st_mode);
     printf("Кол-во ссылок:          %ld\n", (long)sb.st_nlink);
