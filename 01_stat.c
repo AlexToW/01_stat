@@ -43,5 +43,19 @@ int main(int argc, char* argv[]) {
     printf("Размер файла:           %lld байт\n", (long long)sb.st_size);
     printf("Выделено блоков:        %lld\n", (long long)sb.st_blocks);
 
+    struct tm* current_time = (struct tm*)malloc(sizeof(struct tm));
+    char* buf = (char*)malloc(26 * sizeof(char));
+
+    current_time = gmtime_r(&sb.st_ctime, current_time);
+    printf("C_TIME                  %s", asctime_r(current_time, buf));
+
+    current_time = gmtime_r(&sb.st_atime, current_time);
+    printf("A_TIME                  %s", asctime_r(current_time, buf));
+
+    current_time = gmtime_r(&sb.st_mtime, current_time);
+    printf("M_TIME                  %s", asctime_r(current_time, buf));
+
+    free(current_time);
+    free(buf);
     return 0;
 }
