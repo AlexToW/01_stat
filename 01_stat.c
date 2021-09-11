@@ -12,7 +12,7 @@ const char* device_type(const mode_t mode) {
         case S_IFBLK:   return "block device";
         case S_IFCHR:   return "character device";
         case S_IFDIR:   return "directory";
-        case S_IFIFO:   return "FIFO/channel";
+        case S_IFIFO:   return "FIFO/pipe";
         case S_IFLNK:   return "symbolic link";
         case S_IFREG:   return "regular file";
         case S_IFSOCK:  return "socket";
@@ -29,7 +29,7 @@ int main(int argc, char* argv[]) {
 
     struct stat sb;
 
-    if(lstat(argv[1], &sb) == -1) {
+    if(lstat(argv[1], &sb) == -1) { // почему тут именно lstat?
         perror("lstat");
         exit(EXIT_FAILURE);
     }
