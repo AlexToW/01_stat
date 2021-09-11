@@ -45,7 +45,7 @@ int main(int argc, char* argv[]) {
 
 
     struct tm current_time;
-    char buf[26];
+    char buf[sizeof("Day Mon dd hh:mm:ss yyyy\n")];
 
     const char fmt[] = "%a %b %d %H:%M:%S %Y";
     current_time = *gmtime_r(&sb.st_ctime, &current_time);
