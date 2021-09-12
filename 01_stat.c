@@ -57,17 +57,17 @@ int main(int argc, char* argv[]) {
 
     const char fmt[] = "%a %b %d %H:%M:%S %Y";
     current_time = *gmtime_r(&sb.st_ctime, &current_time);
-    if(!strftime(buf, time_str_size, fmt, &current_time)) {
+    if(!strftime(buf, sizeof(buf), fmt, &current_time)) {
         exit(EXIT_FAILURE);
     }
     printf("C_TIME                  %s\n", buf);
     current_time = *gmtime_r(&sb.st_atime, &current_time);
-    if(!strftime(buf, time_str_size, fmt, &current_time)){
+    if(!strftime(buf, sizeof(buf), fmt, &current_time)){
         exit(EXIT_FAILURE);
     }
     printf("A_TIME                  %s\n", buf);
     current_time = *gmtime_r(&sb.st_mtime, &current_time);
-    if(!strftime(buf, time_str_size, fmt, &current_time)) {
+    if(!strftime(buf, sizeof(buf), fmt, &current_time)) {
         exit(EXIT_FAILURE);
     }
     printf("M_TIME                  %s\n", buf);
