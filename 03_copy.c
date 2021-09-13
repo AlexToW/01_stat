@@ -35,7 +35,7 @@ int copy_file(const char *target, const char *source, const size_t chunk)
     if (!data) {
         close(in_fd);
         close(out_fd);
-        unlink(target);
+        unlink(target); // если создали новый target, а он не пригодился
         return ENOMEM;
     }
 
