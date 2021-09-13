@@ -7,23 +7,7 @@
 #include <string.h>
 #include <stdlib.h>
 
-
-ssize_t write_all(int fd, const void *buf, size_t count) { // signed size_t
-    // будет вызывать write до тех пор, пока не возникнет ошибка, либо пока не запишем всё)
-    size_t bytes_written = 0;
-    while(bytes_written < count) {
-        ssize_t res = write(fd, buf_addr + bytes_written, count - bytes_written);
-        if(res < 0) {
-            return res;
-        }
-        bytes_written += res;
-    }
-    return (ssize_t)bytes_written;
-}
-
-
 int main(int argc, char* argv[]) {
-    
     if(argc != 3) {
         fprintf(stderr, "Usage: %s paht text\n", argv[0]);
         return EXIT_FAILURE;
@@ -35,7 +19,7 @@ int main(int argc, char* argv[]) {
         return 2;
     }
 
-    if(write_all(fd, argv[2], strlen(argv[2])) < 0) {
+    if((size_t)dprintf(fd, "%s", argv[2]) != strlen(argv[2])) {
         perror("Failed to write");
         close(fd);
         return 3;
