@@ -9,7 +9,7 @@
 
 int main(int argc, char* argv[]) {
     if(argc != 3) {
-        fprintf(stderr, "Usage: %s paht text\n", argv[0]);
+        fprintf(stderr, "Usage: %s path text\n", argv[0]);
         return EXIT_FAILURE;
     }
     
@@ -19,7 +19,7 @@ int main(int argc, char* argv[]) {
         return 2;
     }
 
-    if((size_t)dprintf(fd, "%s", argv[2]) != strlen(argv[2])) {
+    if(dprintf(fd, "%s", argv[2]) < 0) {
         perror("Failed to write");
         close(fd);
         return 3;
