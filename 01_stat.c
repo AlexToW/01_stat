@@ -48,26 +48,22 @@ int main(int argc, char* argv[]) {
     printf("File size:              %lld byte\n", (long long)sb.st_size);
     printf("Allocated blocks:       %lld\n", (long long)sb.st_blocks);
 
-
     const size_t time_str_size = sizeof("Day Mon dd hh:mm:ss yyyy\n");
 
-
-    struct tm current_time;
+    struct tm curr_time;
     char buf[time_str_size];
 
     const char fmt[] = "%a %b %d %H:%M:%S %Y";
-    current_time = *gmtime_r(&sb.st_ctime, &current_time);
-    if(!strftime(buf, sizeof(buf), fmt, &current_time)) {
+    
+    if(!strftime(buf, sizeof(buf), fmt, gmtime_r(&sb.st_ctime, &curr_time))) {
         exit(EXIT_FAILURE);
     }
     printf("C_TIME                  %s\n", buf);
-    current_time = *gmtime_r(&sb.st_atime, &current_time);
-    if(!strftime(buf, sizeof(buf), fmt, &current_time)){
+    if(!strftime(buf, sizeof(buf), fmt, gmtime_r(&sb.st_atime, &curr_time))) {
         exit(EXIT_FAILURE);
     }
     printf("A_TIME                  %s\n", buf);
-    current_time = *gmtime_r(&sb.st_mtime, &current_time);
-    if(!strftime(buf, sizeof(buf), fmt, &current_time)) {
+    if(!strftime(buf, sizeof(buf), fmt, gmtime_r(&sb.st_mtime, &curr_time))) {
         exit(EXIT_FAILURE);
     }
     printf("M_TIME                  %s\n", buf);
