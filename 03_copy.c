@@ -96,7 +96,6 @@ int copy_file(const char *target, const char *source, const size_t chunk)
 
 int main(int argc, char* argv[]) {
     if(argc != 3) {
-        printf("hahaha%d\n", EXIT_FAILURE);
         fprintf(stderr, "Usage: %s paht text\n", argv[0]);
         return EXIT_FAILURE;
     }
