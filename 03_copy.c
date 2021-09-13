@@ -90,7 +90,7 @@ int copy_file(const char *target, const char *source, const size_t chunk)
         unlink(target);
         return err;
     }
-    return 0;
+    return err;
 }
 
 
