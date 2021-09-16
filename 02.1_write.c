@@ -9,10 +9,11 @@
 
 
 ssize_t write_all(int fd, const void *buf, size_t count) { // signed size_t
-    // будет вызывать write до тех пор, пока не возникнет ошибка, либо пока не запишем всё)
+    /* будет вызывать write до тех пор, пока не возникнет ошибка, либо пока не запишем всё) */
+    
     size_t bytes_written = 0;
     while(bytes_written < count) {
-        ssize_t res = write(fd, buf_addr + bytes_written, count - bytes_written);
+        ssize_t res = write(fd, buf + bytes_written, count - bytes_written);
         if(res < 0) {
             return res;
         }

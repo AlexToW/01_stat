@@ -8,34 +8,18 @@
 #define  DEFAULT_CHUNK  262144  
 
 
-int copy_file(const char *target, const char *source, const size_t chunk)
-{
+//int copy_file(const char *target, const char *source, const size_t chunk)
+int copy_file(int out_fd, int in_fd, const size_t chunk) {
     const size_t size = (chunk > 0) ? chunk : DEFAULT_CHUNK;
     char *data, *ptr, *end;
     ssize_t bytes;
-    int in_fd, out_fd, err;
-
-    if (!target || !*target || !source || !*source) {
-        return EINVAL;
-    }
-
-    in_fd = open(source, O_RDONLY);
-    if (in_fd == -1) {
-        return errno;
-    }
-
-    out_fd = open(target, O_WRONLY | O_CREAT | O_TRUNC, 0644);
-    if (out_fd == -1) {
-        err = errno;
-        close(in_fd);
-        return err;
-    }
+    int err;
 
     data = malloc(size);
     if (!data) {
         close(in_fd);
         close(out_fd);
-        unlink(target); // если создали новый target, а он не пригодился
+        //unlink(target); // если создали новый target, а он не пригодился
         return ENOMEM;
     }
 
@@ -50,7 +34,7 @@ int copy_file(const char *target, const char *source, const size_t chunk)
             free(data);
             close(in_fd);
             close(out_fd);
-            unlink(target);
+            //unlink(target);
             return err;
         } else if (bytes == 0) {
             break;
@@ -69,7 +53,7 @@ int copy_file(const char *target, const char *source, const size_t chunk)
                 free(data);
                 close(in_fd);
                 close(out_fd);
-                unlink(target);
+                //unlink(target);
                 return err;
             } else {
                 ptr += bytes;
@@ -87,7 +71,7 @@ int copy_file(const char *target, const char *source, const size_t chunk)
         err = EIO;
     }
     if (err) {
-        unlink(target);
+        //unlink(target);
         return err;
     }
     return err;
@@ -99,7 +83,24 @@ int main(int argc, char* argv[]) {
         fprintf(stderr, "Usage: %s paht text\n", argv[0]);
         return EXIT_FAILURE;
     }
-    if(copy_file(argv[1], argv[2], 0) != 0) {
+    int in_fd, out_fd, err = 0;
+
+    if (!argv[1] || !*argv[1] || !argv[2] || !*argv[2]) {
+        return EINVAL;
+    }
+
+    in_fd = open(argv[2], O_RDONLY);
+    if (in_fd == -1) {
+        return errno;
+    }
+
+    out_fd = open(argv[1], O_WRONLY | O_CREAT | O_TRUNC, 0644);
+    if (out_fd == -1) {
+        err = errno;
+        close(in_fd);
+        return err;
+    }
+    if(copy_file(out_fd, in_fd, 0) != 0) {
         fprintf(stderr, "Failed to copy to %s from %s", argv[1], argv[2]);
         return 5;
     }

@@ -4,3 +4,4 @@ test2.c
 some_file.txt
 read.txt
 dest.txt
+test_copy.c
