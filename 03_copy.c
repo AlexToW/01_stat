@@ -5,74 +5,64 @@
 #include <stdio.h>
 
 
-#define  DEFAULT_CHUNK  262144  
+#define DEFAULT_CHUNK   262144
 
 
-//int copy_file(const char *target, const char *source, const size_t chunk)
-int copy_file(int out_fd, int in_fd, const size_t chunk) {
-    const size_t size = (chunk > 0) ? chunk : DEFAULT_CHUNK;
-    char *data, *ptr, *end;
-    ssize_t bytes;
+ssize_t write_all(int fd, const void *buf, size_t count) { // signed size_t
+    /* будет вызывать write до тех пор, пока не возникнет ошибка, либо пока не запишем всё) */
+    size_t bytes_written = 0;
+    while(bytes_written < count) {
+        ssize_t res = write(fd, buf + bytes_written, count - bytes_written);
+        if(res < 0) {
+            return res;
+        }
+        bytes_written += res;
+    }
+    return (ssize_t)bytes_written;
+}
+
+
+int copy_file(int src_fd, int dest_fd) {
+    ssize_t bytes = 0;
     int err;
-
-    data = malloc(size);
-    if (!data) {
-        close(in_fd);
-        close(out_fd);
-        //unlink(target); // если создали новый target, а он не пригодился
+    char* data = (char*)malloc(DEFAULT_CHUNK);
+    if(!data) {
+        close(src_fd);
+        close(dest_fd);
         return ENOMEM;
     }
-
-    while (1) {
-        bytes = read(in_fd, data, size);
-        if (bytes < 0) {
-            if (bytes == -1) {
-                err = errno;
-            } else {
-                err = EIO;
-            }
-            free(data);
-            close(in_fd);
-            close(out_fd);
-            //unlink(target);
+    while(1) {
+        bytes = read(src_fd, data, sizeof(data));
+        if(bytes == -1) {
+            err = errno;
+            close(src_fd);
+            close(dest_fd);
             return err;
-        } else if (bytes == 0) {
+        }
+        if(bytes == 0) {
             break;
         }
-
-        ptr = data;
-        end = data + bytes;
-        while (ptr < end) {
-            bytes = write(out_fd, ptr, (size_t)(end - ptr));
-            if (bytes <= 0) {
-                if (bytes == -1) {
-                    err = errno;
-                } else {
-                    err = EIO;
-                }
-                free(data);
-                close(in_fd);
-                close(out_fd);
-                //unlink(target);
-                return err;
-            } else {
-                ptr += bytes;
+        bytes = write_all(dest_fd, data, bytes);
+        if(bytes < 0) {
+            err = EIO;
+            if(bytes == -1) {
+                err = errno;
             }
+            free(data);
+            close(src_fd);
+            close(dest_fd);
+            return err;
         }
     }
 
     free(data);
 
     err = 0;
-    if (close(in_fd)) {
+    if (close(src_fd)) {
         err = EIO;
     }
-    if (close(out_fd)) {
+    if (close(dest_fd)) {
         err = EIO;
-    }
-    if (err) {
-        //unlink(target);
-        return err;
     }
     return err;
 }
@@ -83,24 +73,19 @@ int main(int argc, char* argv[]) {
         fprintf(stderr, "Usage: %s paht text\n", argv[0]);
         return EXIT_FAILURE;
     }
-    int in_fd, out_fd, err = 0;
 
-    if (!argv[1] || !*argv[1] || !argv[2] || !*argv[2]) {
-        return EINVAL;
-    }
-
-    in_fd = open(argv[2], O_RDONLY);
+    int in_fd = open(argv[1], O_RDONLY);
     if (in_fd == -1) {
         return errno;
     }
 
-    out_fd = open(argv[1], O_WRONLY | O_CREAT | O_TRUNC, 0644);
+    int out_fd = open(argv[2], O_WRONLY | O_CREAT | O_TRUNC, 0644);
     if (out_fd == -1) {
-        err = errno;
+        int err = errno;
         close(in_fd);
         return err;
     }
-    if(copy_file(out_fd, in_fd, 0) != 0) {
+    if(copy_file(in_fd, out_fd) != 0) {
         fprintf(stderr, "Failed to copy to %s from %s", argv[1], argv[2]);
         return 5;
     }
