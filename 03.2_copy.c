@@ -11,6 +11,21 @@
 #define BUFFSIZE        1024
 
 
+int pwrite_all(int out_fd, const void* buf, ssize_t bytes_r, off_t out_offset) {
+    ssize_t bytes_w;
+    while(bytes_r) {
+        bytes_w = pwrite(out_fd, buf, bytes_r, out_offset);
+        if(bytes_w == -1) {
+            perror("Bad writing");
+            return 1;
+        }
+        bytes_r -= bytes_w;
+        out_offset += bytes_w;
+    }
+    return 0;
+}
+
+
 int main(int argc, char* argv[]) {
     if(argc != 3) {
         fprintf(stderr, "Usage: %s path text\n", argv[0]);
@@ -41,7 +56,7 @@ int main(int argc, char* argv[]) {
     }
     off_t in_offset = 0, out_offset = 0;
     char buf[BUFFSIZE];
-    ssize_t bytes_r, bytes_w;
+    ssize_t bytes_r;
     while(1) {
         bytes_r = pread(in_fd, buf, sizeof(buf), in_offset);
         if(bytes_r == 0) {
@@ -53,14 +68,8 @@ int main(int argc, char* argv[]) {
         in_offset += bytes_r;
 
         // непосредственно запись
-        while(bytes_r) {
-            bytes_w = pwrite(out_fd, buf, bytes_r, out_offset);
-            if(bytes_w == -1) {
-                perror("Bad writing");
-                return 2;
-            }
-            bytes_r -= bytes_w;
-            out_offset += bytes_w;
+        if(pwrite_all(out_fd, buf, bytes_r, out_offset) != 0) {
+            return 1;
         }
     }
     if(close(in_fd)) {
