@@ -57,6 +57,7 @@ int main(int argc, char* argv[]) {
     off_t in_offset = 0, out_offset = 0;
     char buf[BUFFSIZE];
     ssize_t bytes_r;
+    
     while(1) {
         bytes_r = pread(in_fd, buf, sizeof(buf), in_offset);
         if(bytes_r == 0) {
