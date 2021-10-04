@@ -11,18 +11,18 @@
 #define BUFFSIZE    1024
 
 
-int pwrite_all(int out_fd, const void* buf, ssize_t bytes_r, off_t* out_offset) {
-    ssize_t bytes_w;
-    while(bytes_r) {
-        bytes_w = pwrite(out_fd, buf, bytes_r, *out_offset);
-        if(bytes_w == -1) {
+ssize_t pwrite_all(int out_fd, const void* buf, ssize_t bytes_r, off_t* out_offset) {
+    ssize_t bytes_w = 0;
+    while(bytes_w < bytes_r) {
+        ssize_t res = pwrite(out_fd, buf, bytes_r, *out_offset);
+        if(res == -1) {
             perror("Bad writing");
             return 1;
         }
-        bytes_r -= bytes_w;
-        *out_offset += bytes_w;
+        bytes_w += res;
+        *out_offset += res;
     }
-    return 0;
+    return (ssize_t)bytes_w;
 }
 
 
@@ -68,7 +68,7 @@ int main(int argc, char* argv[]) {
         in_offset += bytes_r;
 
         // непосредственно запись
-        if(pwrite_all(out_fd, buf, bytes_r, &out_offset) != 0) {
+        if(pwrite_all(out_fd, buf, bytes_r, &out_offset) != bytes_r) {
             return 6;
         }
     }
