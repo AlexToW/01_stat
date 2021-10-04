@@ -58,7 +58,7 @@ int main(int argc, char* argv[]) {
                 break;
             }
             if(bytes_r == -1) {
-                return errno;
+                exit(EXIT_FAILURE);
             }
             in_offset += bytes_r;
 
