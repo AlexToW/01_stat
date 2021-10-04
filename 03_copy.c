@@ -54,40 +54,40 @@ int copy_file(int src_fd, int dest_fd) {
             return err;
         }
     }
-
     free(data);
-
-    err = 0;
-    if (close(src_fd)) {
-        err = EIO;
-    }
-    if (close(dest_fd)) {
-        err = EIO;
-    }
-    return err;
+    return 0;
 }
 
 
 int main(int argc, char* argv[]) {
     if(argc != 3) {
-        fprintf(stderr, "Usage: %s paht text\n", argv[0]);
-        return EXIT_FAILURE;
+        fprintf(stderr, "Usage: %s path text\n", argv[0]);
+        return 1;
     }
 
     int in_fd = open(argv[1], O_RDONLY);
     if (in_fd == -1) {
-        return errno;
+        perror("File open error");
+        return 2;
     }
 
     int out_fd = open(argv[2], O_WRONLY | O_CREAT | O_TRUNC, 0644);
     if (out_fd == -1) {
-        int err = errno;
+        perror("File open error");
         close(in_fd);
-        return err;
+        return 3;
     }
     if(copy_file(in_fd, out_fd) != 0) {
         fprintf(stderr, "Failed to copy to %s from %s", argv[1], argv[2]);
+        return 4;
+    }
+    if (close(src_fd)) {
+        perror("File close error");
         return 5;
+    }
+    if (close(dest_fd)) {
+        perror("File close error");
+        return 6;
     }
     return 0;
 }
