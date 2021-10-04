@@ -21,7 +21,7 @@ char dtype_letter(unsigned d_type) {
 
 char mode_letter(mode_t st_mode) {
 	switch (st_mode & S_IFMT) {
-    	case S_IFBLK: return 'b'; 
+		case S_IFBLK: return 'b'; 
 		case S_IFCHR: return 'c';
 		case S_IFDIR: return 'd'; 
 		case S_IFIFO: return 'p'; 
@@ -34,24 +34,22 @@ char mode_letter(mode_t st_mode) {
 
 
 int main(void) {
-    DIR* dir_fd = opendir(".");
-    if(!dir_fd) {
-        return 1;
-    } 
-    struct dirent* entry;
+	DIR* dir_fd = opendir(".");
+	if(!dir_fd) {
+		return 1;
+	}
+	struct dirent* entry;
 	char type = '?';
-    while((entry = readdir(dir_fd)) != NULL) {
-        type = dtype_letter(entry->d_type);
+	while((entry = readdir(dir_fd)) != NULL) {
+		type = dtype_letter(entry->d_type);
 		if(type == '?') {
 			struct stat sb;
-			if(lstat(entry->d_name, &sb) == -1) {
-				closedir(dir_fd);
-				exit(EXIT_FAILURE);
+			if(lstat(entry->d_name, &sb) == 0) {
+				type = mode_letter(sb.st_mode);
 			}
-			type = mode_letter(sb.st_mode);
 		}
 		printf("%c %s\n", type, entry->d_name);
-    }
-    closedir(dir_fd);
-    return 0;
+	}
+	closedir(dir_fd);
+	return 0;
 }

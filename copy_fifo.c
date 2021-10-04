@@ -8,9 +8,6 @@
 #include <string.h>
 
 
-#define DEFAULT_CHUNK   262144
-
-
 int main(int argc, char* argv[]) {
     if(argc != 3) {
         fprintf(stderr, "Bad argc: %d\n", argc);
@@ -43,7 +40,7 @@ int main(int argc, char* argv[]) {
     if(lstat(argv[2], &sb_dst) == -1) {
         if(errno == ENOENT && strlen(argv[2]) == 0) {
             // destination_file не существует
-            if(mkfifo(argv[2], sb.st_mode) == -1) { // 777 = r+w+x for all users
+            if(mkfifo(argv[2], sb.st_mode) == -1) { // 0777 = r+w+x for all users
                 fprintf(stderr, "Failure to create FIFO file at %s\n", argv[2]);
                 exit(EXIT_FAILURE);
             }
