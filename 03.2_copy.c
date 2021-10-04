@@ -39,12 +39,13 @@ int main(int argc, char* argv[]) {
     if((sb.st_mode & S_IFMT) == S_IFREG) {
         int in_fd = open(argv[1], O_RDONLY);
         if (in_fd == -1) {
-            perror("Cannot open file to read");
+            perror("File open error");
             return 4;
         }
 
         int out_fd = open(argv[2], O_WRONLY | O_CREAT | O_TRUNC, S_IRUSR | S_IWUSR); // хотим и писать, и читать
         if (out_fd == -1) {
+            perror("File open error");
             close(in_fd);
             return 5;
         }
@@ -58,6 +59,7 @@ int main(int argc, char* argv[]) {
                 break;
             }
             if(bytes_r == -1) {
+                perror("File reading error");
                 exit(EXIT_FAILURE);
             }
             in_offset += bytes_r;
