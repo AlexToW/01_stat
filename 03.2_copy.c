@@ -36,49 +36,48 @@ int main(int argc, char* argv[]) {
         perror("lstat");
         return 2;
     }
-    if((sb.st_mode & S_IFMT) != S_IFREG) {
+    if((sb.st_mode & S_IFMT) == S_IFREG) {
+        int in_fd = open(argv[1], O_RDONLY);
+        if (in_fd == -1) {
+            perror("Cannot open file to read");
+            return 4;
+        }
+
+        int out_fd = open(argv[2], O_WRONLY | O_CREAT | O_TRUNC, S_IRUSR | S_IWUSR); // хотим и писать, и читать
+        if (out_fd == -1) {
+            close(in_fd);
+            return 5;
+        }
+        off_t in_offset = 0, out_offset = 0;
+        char buf[BUFFSIZE];
+        ssize_t bytes_r;
+        
+        while(1) {
+            bytes_r = pread(in_fd, buf, sizeof(buf), in_offset);
+            if(bytes_r == 0) {
+                break;
+            }
+            if(bytes_r == -1) {
+                return errno;
+            }
+            in_offset += bytes_r;
+
+            // непосредственно запись
+            if(pwrite_all(out_fd, buf, bytes_r, &out_offset) != bytes_r) {
+                return 6;
+            }
+        }
+        if(close(in_fd)) {
+            perror("Bad closing");
+            return 7;
+        }
+        if(close(out_fd)) {
+            perror("Bad closing");
+            return 8;
+        }
+    } else {
         fprintf(stderr, "Not a regular file %s\n", argv[1]);
         return 3;
-    }
-
-
-    int in_fd = open(argv[1], O_RDONLY);
-    if (in_fd == -1) {
-        perror("Cannot open file to read");
-        return 4;
-    }
-
-    int out_fd = open(argv[2], O_WRONLY | O_CREAT | O_TRUNC, S_IRUSR | S_IWUSR); // хотим и писать, и читать
-    if (out_fd == -1) {
-        close(in_fd);
-        return 5;
-    }
-    off_t in_offset = 0, out_offset = 0;
-    char buf[BUFFSIZE];
-    ssize_t bytes_r;
-    
-    while(1) {
-        bytes_r = pread(in_fd, buf, sizeof(buf), in_offset);
-        if(bytes_r == 0) {
-            break;
-        }
-        if(bytes_r == -1) {
-            return errno;
-        }
-        in_offset += bytes_r;
-
-        // непосредственно запись
-        if(pwrite_all(out_fd, buf, bytes_r, &out_offset) != bytes_r) {
-            return 6;
-        }
-    }
-    if(close(in_fd)) {
-        perror("Bad closing");
-        return 7;
-    }
-    if(close(out_fd)) {
-        perror("Bad closing");
-        return 8;
     }
     return 0;
 }
