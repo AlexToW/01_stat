@@ -16,6 +16,7 @@
 int copy_fifo(char* fifo_name);
 int copy_blk_chr(char* blk_name, mode_t type);
 int copy_symlink(char* src_link, char* dst_link);
+int copy_reg(int src_fd, int dest_fd);
 ssize_t write_all(int fd, const void *buf, size_t count);
 
 
