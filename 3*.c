@@ -9,7 +9,7 @@
 
 
 #define DEFAULT_CHUNK   262144
-#define O_PATH		    010000000
+#define O_PATH          010000000
 #define PATH_MAX        4096
 
 
