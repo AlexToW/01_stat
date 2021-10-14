@@ -1,3 +1,7 @@
+/*
+    aka 04_metadata + copy UID/GID
+*/
+
 #include <stdlib.h>
 #include <unistd.h>
 #include <fcntl.h>
@@ -5,6 +9,7 @@
 #include <stdio.h>
 #include <sys/stat.h>
 #include <sys/types.h>
+#include <pwd.h>
 
 
 #define DEFAULT_CHUNK   262144
@@ -61,17 +66,24 @@ int copy_file(int src_fd, int dest_fd) {
 }
 
 
-int copy_metadata(char* src_file, int dest_fd) {
+int copy_metadata(char* src_file, char* dest_file, int dest_fd) {
     struct stat sb_src;
     if(stat(src_file, &sb_src) == 0) {
         /* copy mode */
         if(fchmod(dest_fd, sb_src.st_mode) != 0) {
+            perror("fchmod");
             return 1;
         }
         /* copy atime, mtime */
         const struct timespec times[2] = {sb_src.st_atim, sb_src.st_mtim};
         if(futimens(dest_fd, times) != 0) {
+            perror("futimens");
             return 2;
+        }
+        /* copy UID, GID*/
+        if(lchown(dest_file, sb_src.st_uid, sb_src.st_gid) != 0) {
+            perror("fchown");
+            return 3;
         }
     }
     return 0;
@@ -104,7 +116,7 @@ int main(int argc, char* argv[]) {
         perror("File close error");
         return 6;
     }
-    if(copy_metadata(argv[1], out_fd) != 0) {
+    if(copy_metadata(argv[1], argv[2],  out_fd) != 0) {
         perror("Metadata copy failure");
         return 5;
     }
