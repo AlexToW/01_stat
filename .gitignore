@@ -18,3 +18,7 @@ jet.cpp
 str.cpp
 .vscode/
 copy_symlink.c
+6.4_good.c
+test_dir/
+dir_trac.c
+6.4_readdir_recurs.c
