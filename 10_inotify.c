@@ -1,7 +1,6 @@
 /*
     Появление новых файлов в указанном каталоге
 */
-
 #include <errno.h>
 #include <poll.h>
 #include <stdio.h>
