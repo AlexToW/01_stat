@@ -13,7 +13,6 @@ sem_copy.c
 3*_copy.c
 create_fifo.c
 tt.txt
-12.c
 jet.cpp
 str.cpp
 .vscode/
