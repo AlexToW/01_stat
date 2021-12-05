@@ -8,27 +8,58 @@
 #include <sys/stat.h>
 #include <sys/file.h>
 #include <unistd.h>
+#include <string.h>
 
 
 #define BUFSIZE 1024
+#define DEBUG
 
 
 int main(void) {
     const char* filename = "data.txt";
     int fd = open(filename, O_RDWR | O_CREAT, 0644); // хотим и читать, и писать
+    if(fd == -1) {
+        perror("Failed to open file");
+        return 1;
+    }
     // блокируем эксклюзивной блокировкой 
-    flock(fd, LOCK_EX);
+    if(flock(fd, LOCK_EX) == -1) {
+        perror("Failed to flock");
+        return 2;
+    }
     // обновляем значение в data.txt
     char buffer[BUFSIZE];
-    read(fd, buffer, sizeof(buffer));
+    if(read(fd, buffer, sizeof(buffer)) == -1) {
+        perror("Failed to read");
+        close(fd);
+        return 3;
+    }
     int cnt = atoi(buffer);
     cnt++;
+    #ifdef DEBUG
+        printf("currrent cnt-1: %d\n", cnt);
+    #endif
     char* newcnt;
-    asprintf(&newcnt, "%d", cnt);
+    if(asprintf(&newcnt, "%d", cnt) < 0) {
+        perror("Failed to asprnitf");
+        close(fd);
+        free(newcnt);
+        return 4;
+    }
     // записываем новое значение, затирая старое
-    pwrite(fd, newcnt, sizeof(newcnt), 0);
+    if(pwrite(fd, newcnt, strlen(newcnt), 0) == -1) {
+        perror("Failed to pwrite");
+        close(fd);
+        free(newcnt);
+        return 5;
+    }
+    free(newcnt);
     // снимаем блокировку 
-    flock(fd, LOCK_UN);
+    if(flock(fd, LOCK_UN) == -1) {
+        perror("Failed to flock: unlock");
+        close(fd);
+        return 6;
+    }
     close(fd);
     return 0;
 }
