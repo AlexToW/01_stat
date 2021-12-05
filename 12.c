@@ -12,6 +12,9 @@
 #include <unistd.h>
 #include <pwd.h>
 #include <grp.h>
+#include <sys/stat.h>
+#include <sys/time.h>
+#include <sys/resource.h>
 
 
 #define NGROUPS 20
@@ -87,6 +90,17 @@ int main(void) {
         printf("\n");
     }
 
+    // get umask
+    mode_t u_mask = umask(0666); // 0666 -- общие права на чтение и запись
+    printf("umask: %o\n", u_mask);
+    u_mask = umask(u_mask); // хотим оставить всё как было
 
+    // Sheduling priority
+    int pr = getpriority(PRIO_PROCESS, 0);
+    if(pr == -1) {
+        perror("Failure getpriority");
+        exit(EXIT_FAILURE);
+    }
+    printf("Sheduling priority: %d\n", pr);
     return 0;
 }
