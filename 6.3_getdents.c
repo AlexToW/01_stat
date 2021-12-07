@@ -47,7 +47,7 @@ int main(int argc, char* argv[]) {
     }
 
     for( ; ; ) {
-        nread = syscall(SYS_getdents, fd, buf, BUF_SIZE);
+        nread = syscall(SYS_getdents64, fd, buf, BUF_SIZE);
         if(nread == -1) {
             handle_error("getdents");
         }
