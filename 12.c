@@ -34,13 +34,13 @@ int main(void) {
 
     // GID
     const char* grp_name;
-    struct group* grp_info = getgrgid(getgid());
+    struct group* grp_info = getgrgid(getpgid(process_id));
     if(grp_info == NULL) {
         grp_name = "?";
     } else {
         grp_name = grp_info->gr_name;
     }
-    printf("Group ID = %d, %s\n", getgid(), grp_name);
+    printf("Group ID = %d, %s\n", getpgid(process_id), grp_name);
 
     // get user name
     struct passwd* pass_info;
@@ -91,7 +91,7 @@ int main(void) {
     }
 
     // get umask
-    mode_t u_mask = umask(0666); // 0666 -- общие права на чтение и запись
+    mode_t u_mask = umask(ALLPERMS);
     printf("umask: %o\n", u_mask);
     u_mask = umask(u_mask); // хотим оставить всё как было
 
