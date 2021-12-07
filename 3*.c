@@ -1,3 +1,7 @@
+/*
+    Perms S_IRUSR|S_IWUSR|S_IRGRP|S_IROTH = 0644
+*/
+
 #include <stdlib.h>
 #include <unistd.h>
 #include <fcntl.h>
@@ -91,11 +95,11 @@ int copy_blk_chr(char* blk_name, mode_t type) {
     if(lstat(blk_name, &sb) == -1 && strlen(blk_name) != 0) {
         // то есть файл argv[2] не существует, будем создавать
         if(type == S_IFBLK) {
-            if(mknod(blk_name, S_IFBLK | DEFFILEMODE, 0) == -1) { // DEFFILEMODE -- 0666
+            if(mknod(blk_name, S_IFBLK | 0644, 0) == -1) { 
                 return 3;
             }
         } else {
-            if(mknod(blk_name, S_IFCHR | DEFFILEMODE, 0) == -1) {
+            if(mknod(blk_name, S_IFCHR | 0644, 0) == -1) {
                 return 4;
             }
         }
@@ -160,7 +164,7 @@ int main(int argc, char* argv[]) {
             exit(EXIT_FAILURE);
         }
 
-        int out_fd = open(argv[2], O_WRONLY | O_CREAT | O_TRUNC, DEFFILEMODE);
+        int out_fd = open(argv[2], O_WRONLY | O_CREAT | O_TRUNC, S_IRUSR|S_IWUSR|S_IRGRP|S_IROTH);
         if (out_fd == -1) {
             perror("File open error");
             close(in_fd);

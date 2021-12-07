@@ -90,7 +90,7 @@ int main(int argc, char* argv[]) {
         return 2;
     }
 
-    int out_fd = open(argv[2], O_WRONLY | O_CREAT | O_TRUNC, 0644);
+    int out_fd = open(argv[2], O_WRONLY | O_CREAT | O_TRUNC, S_IRUSR|S_IWUSR|S_IRGRP|S_IROTH);
     if (out_fd == -1) {
         perror("File open error");
         close(in_fd);
