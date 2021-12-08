@@ -33,7 +33,7 @@ void print_info(struct statfs* sb) {
 
 int main(int argc, char* argv[]) {
     if(argc < 2) {
-        perror("argc");
+        fprintf(stderr, "Bad argc(%d)\n", argc);
         exit(EXIT_FAILURE);
     }
     struct statfs sb;
