@@ -65,7 +65,7 @@ int copy_metadata(char* src_file, int dest_fd) {
     struct stat sb_src;
     if(stat(src_file, &sb_src) == 0) {
         /* copy mode */
-        if(fchmod(dest_fd, sb_src.st_mode) != 0) {
+        if(fchmod(dest_fd, sb_src.st_mode & ALLPERMS) != 0) {
             return 1;
         }
         /* copy atime, mtime */
