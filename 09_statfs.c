@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <sys/vfs.h>
 #include <stdlib.h>
+#include <stdint.h>
 #include "/usr/include/linux/magic.h"
 
 #if 0
@@ -25,9 +26,9 @@ struct statfs {
 
 
 void print_info(struct statfs* sb) {
-    printf("Total:      %lu\n", sb->f_blocks * sb->f_bsize);
-    printf("Available:  %lu\n", sb->f_bavail * sb->f_bsize);
-    printf("Used:       %lu\n", sb->f_blocks * sb->f_bsize - sb->f_bavail * sb->f_bsize); // total - available
+    printf("Total:      %ju\n", (uintmax_t)sb->f_blocks * sb->f_bsize);
+    printf("Available:  %ju\n", (uintmax_t)sb->f_bavail * sb->f_bsize);
+    printf("Used:       %ju\n", (uintmax_t)sb->f_bsize * (sb->f_blocks  - sb->f_bavail)); // total - available
 }
 
 

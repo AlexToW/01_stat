@@ -7,7 +7,7 @@
 
 int main(int argc, char* argv[]) { // имя очереди и что в нее написать
     if(argc != 3) {
-        perror("argc");
+        fprintf(stderr, "Usage: %s /queue-name, 'message text'\n", argv[0]);
         return 1;
     }
     int result = 0;

@@ -42,7 +42,7 @@ int main(void) {
             return 1;
         }
         close(pipe_fds[1]);
-        execlp("gzip", "gzip", "<", "1.txt", NULL);
+        execlp("gzip", "gzip", "<", "1.txt", NULL); // стрелочку убрать
         perror("failed to exec 'gzip'");
         return 1;
     }

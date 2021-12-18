@@ -5,7 +5,7 @@
 #include <stdio.h>
 
 
-#define DEFAULT_CHUNK   262144
+#define DEFAULT_CHUNK   (256 * 1024)
 
 
 ssize_t write_all(int fd, const void *buf, size_t count) { // signed size_t
@@ -25,18 +25,15 @@ ssize_t write_all(int fd, const void *buf, size_t count) { // signed size_t
 int copy_file(int src_fd, int dest_fd) {
     ssize_t bytes = 0;
     int err;
-    char* data = (char*)malloc(DEFAULT_CHUNK);
+    char* data = (char*)malloc(DEFAULT_CHUNK); // вынести 
     if(!data) {
-        close(src_fd);
-        close(dest_fd);
         return ENOMEM;
     }
     while(1) {
-        bytes = read(src_fd, data, sizeof(data));
+        bytes = read(src_fd, data, DEFAULT_CHUNK);
         if(bytes == -1) {
             err = errno;
-            close(src_fd);
-            close(dest_fd);
+            perror("read");
             return err;
         }
         if(bytes == 0) {
@@ -44,13 +41,9 @@ int copy_file(int src_fd, int dest_fd) {
         }
         bytes = write_all(dest_fd, data, bytes);
         if(bytes < 0) {
-            err = EIO;
-            if(bytes == -1) {
-                err = errno;
-            }
+            err = errno;
+            perror("read");
             free(data);
-            close(src_fd);
-            close(dest_fd);
             return err;
         }
     }
@@ -60,6 +53,7 @@ int copy_file(int src_fd, int dest_fd) {
 
 
 int main(int argc, char* argv[]) {
+    int result = 0;
     if(argc != 3) {
         fprintf(stderr, "Usage: %s path text\n", argv[0]);
         return 1;
@@ -79,15 +73,15 @@ int main(int argc, char* argv[]) {
     }
     if(copy_file(in_fd, out_fd) != 0) {
         fprintf(stderr, "Failed to copy to %s from %s", argv[1], argv[2]);
-        return 4;
+        result = 4;
     }
-    if (close(src_fd)) {
+    if (close(in_fd)) {
         perror("File close error");
-        return 5;
+        result = 5;
     }
-    if (close(dest_fd)) {
+    if (close(out_fd)) {
         perror("File close error");
-        return 6;
+        result = 6;
     }
-    return 0;
+    return result;
 }

@@ -31,7 +31,7 @@ int main(void) {
     }
     /* code for child process only */
     if(child_id == 0) {
-        int file_fd = open("1.txt", O_WRONLY | /*O_TRUNC*/ O_APPEND | O_CREAT, S_IRUSR|S_IWUSR|S_IRGRP|S_IROTH); // assume that fd 1 is reused
+        int file_fd = open("1.txt", O_WRONLY | O_APPEND | O_CREAT, S_IRUSR|S_IWUSR|S_IRGRP|S_IROTH);
         if(file_fd < 0) {
             perror("open");
             return 1;

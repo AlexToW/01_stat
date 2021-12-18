@@ -11,7 +11,6 @@
 #include <string.h>
 
 
-#define BUFSIZE 1024
 #define DEBUG
 
 
@@ -22,21 +21,22 @@ int main(void) {
         perror("Failed to open file");
         return 1;
     }
-    FILE* file = fdopen(fd, "w+");
+    FILE* file = fdopen(fd, "r+");
     if(!file) {
         perror("fdopen");
+        close(fd);
         exit(EXIT_FAILURE);
     }
     // блокируем эксклюзивной блокировкой 
     if(flock(fd, LOCK_EX) == -1) {
         perror("Failed to flock");
+        fclose(file);
         return 2;
     }
     // обновляем значение в data.txt
     int cnt = 0;
     if(!fscanf(file, "%d", &cnt)) {
         perror("Failed to fscanf");
-        close(fd);
         fclose(file);
         return 3;
     }
@@ -45,30 +45,29 @@ int main(void) {
         printf("currrent cnt-1: %d\n", cnt);
     #endif
     char* newcnt;
+    /*
     if(asprintf(&newcnt, "%d", cnt) < 0) {
         perror("Failed to asprnitf");
-        close(fd);
         free(newcnt);
         fclose(file);
         return 4;
     }
+    */
+
     // записываем новое значение, затирая старое
     if(pwrite(fd, newcnt, strlen(newcnt), 0) == -1) {
         perror("Failed to pwrite");
-        close(fd);
         fclose(file);
-        free(newcnt);
+        // free(newcnt);
         return 5;
     }
     free(newcnt);
     // снимаем блокировку 
     if(flock(fd, LOCK_UN) == -1) {
         perror("Failed to flock: unlock");
-        close(fd);
         fclose(file);
         return 6;
     }
-    close(fd);
     fclose(file);
     return 0;
 }

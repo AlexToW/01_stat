@@ -31,11 +31,12 @@
 #define DEBUG
 
 
-void handle_event(int fd, int wd, char* pathname) {
-    char buf[SIZEOF_BUF];
+void handle_event(int fd, const char* pathname) {
+    char buf[SIZEOF_BUF] __attribute__ ((aligned(__alignof__(struct inotify_event)))); // выравнивание буфера
     const struct inotify_event *event;
     ssize_t len;
     char *ptr;
+    uint32_t cookie = 0;
     for(;;) {
         len = read(fd, buf, sizeof(buf));
         if(len == -1 && errno != EAGAIN) {
@@ -48,15 +49,17 @@ void handle_event(int fd, int wd, char* pathname) {
 
         for(ptr = buf; ptr < buf + len; ptr += sizeof(struct inotify_event) + event->len) {
             event = (const struct inotify_event*)buf;
-            if(event->cookie != 0 && (event->mask & IN_MOVE)) {
-                // IN_MOVED_FROM & IN_MOVED_TO
-                if(event->len && wd == event->wd)
-                    printf("IN_MOVE: %s/%s", pathname, event->name);
-            } else if(event->mask & IN_CREATE) {
-                if(event->len && wd == event->wd)
+            if (event->mask & IN_MOVED_FROM) {
+                cookie = event->cookie;
+            } else if (event->mask & IN_MOVED_TO) {
+                if (cookie != event->cookie) {
+                    printf("IN_MOVEED_TO: %s/%s", pathname, event->name);
+                }
+            } else if (event->mask & IN_CREATE) {
+                if (event->len)
                     printf("IN_CREATE: %s/%s", pathname, event->name);
             }
-            if(event->mask & IN_ISDIR) {
+            if (event->mask & IN_ISDIR) {
                 printf("\t(directory)\n");
             } else {
                 printf("\t(file)\n");
@@ -119,7 +122,7 @@ int main(int argc, char* argv[]) {
             }
             if (fds[1].revents & POLLIN) {
                 /* доступны события inotify */
-                handle_event(fd, wd, argv[1]);
+                handle_event(fd, argv[1]);
             }
         }
     }

@@ -5,9 +5,10 @@
 #include <string.h>
 #include <stdlib.h>
 #include <sys/stat.h>
+#include <limits.h>
 
 
-#define SIZEOF_PATH     1024
+#define SIZEOF_PATH     1024 
 #define INDENT          4
 #define MAX_DEPTH       10
 

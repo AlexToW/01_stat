@@ -61,7 +61,9 @@ int copy_file(int src_fd, int dest_fd) {
 }
 
 
-int copy_metadata(char* src_file, int dest_fd) {
+//int copy_metadata(const char* src_file, int dest_fd) {
+int copy_metadata(int src_fd, int dest_fd) {
+    // fstat вместо stat
     struct stat sb_src;
     if(stat(src_file, &sb_src) == 0) {
         /* copy mode */

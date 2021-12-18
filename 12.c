@@ -34,7 +34,7 @@ int main(void) {
 
     // GID
     const char* grp_name;
-    struct group* grp_info = getgrgid(getpgid(process_id));
+    struct group* grp_info = getgrgid(getgid());
     if(grp_info == NULL) {
         grp_name = "?";
     } else {

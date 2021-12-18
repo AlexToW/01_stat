@@ -20,7 +20,7 @@ ssize_t pwrite_all(int out_fd, const void* buf, ssize_t bytes_r, off_t* out_offs
             return 1;
         }
         bytes_w += res;
-        *out_offset += res;
+        (*out_offset) += res;
     }
     return (ssize_t)bytes_w;
 }

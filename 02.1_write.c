@@ -26,7 +26,7 @@ ssize_t write_all(int fd, const void *buf, size_t count) { // signed size_t
 int main(int argc, char* argv[]) {
     
     if(argc != 3) {
-        fprintf(stderr, "Usage: %s paht text\n", argv[0]);
+        fprintf(stderr, "Usage: %s path text\n", argv[0]);
         return EXIT_FAILURE;
     }
     

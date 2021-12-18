@@ -1,8 +1,6 @@
 /*
     14.1
-*/
-#define _GNU_SOURCE
- 
+*/ 
 #include <unistd.h>
 #include <sys/types.h>
 #include <stdio.h>

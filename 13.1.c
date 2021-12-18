@@ -37,7 +37,7 @@ int main(void) {
     // this code is executed in parent processes
     proc_info("parent");
     int status;
-    pid_t res = wait(&status);
+    pid_t res = wait(&status); // тут waitpid или waitid(любой процесс из группы)!!!
     if(WIFEXITED(status)) {  // завершился добровольно
         printf("child with PID %d has exited normally with status %d\n", res, WEXITSTATUS(status));
     } else if(WIFSIGNALED(status)){ // процесс прибило сигналом
