@@ -34,9 +34,18 @@ int main(void) {
             psignal(signal, NULL);
         }
     }
+    siginfo_t  info;
+    sigset_t   mask;
+    sigemptyset(&mask);
+    sigaddset(&mask, SIGINT);
+    sigaddset(&mask, SIGQUIT);
+    sigaddset(&mask, SIGTERM);
+    sigaddset(&mask, SIGTSTP);
     while(1) {
-        pause();
-        printf(" last_signal = %d (%s)\n", g_last_signal, strsignal(g_last_signal));
+        int signum = sigwaitinfo(&mask, &info);
+        // printf("%d\n", signum);
+        sig_handler(signum);
+        printf("Процесс, пославший сигнал: %d, last_signal = %d (%s)\n", info.si_pid, g_last_signal, strsignal(g_last_signal));
     }
     return 0;
 }
