@@ -71,6 +71,10 @@ int main(void) {
         }
     }
     putchar('\n');
+    // umask
+    mode_t u_mask = umask(ALLPERMS);
+    printf("umask: %o\n", u_mask);
+    u_mask = umask(u_mask); // хотим оставить всё как было
 
     #if 0
     // UID
