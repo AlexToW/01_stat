@@ -17,8 +17,10 @@ void sig_handler(int signum) {
 
 int main(void) {
     printf("PID: %d\n", getpid());
-    struct sigaction sigact_struct;
-    sigact_struct.sa_handler = sig_handler;
+    struct sigaction sigact_struct = {
+        .sa_handler = sig_handler,
+        .sa_flags = SA_RESTART
+    };
     sigaction(SIGINT, &sigact_struct, NULL);
     sigaction(SIGQUIT, &sigact_struct, NULL);
     sigaction(SIGSTOP, &sigact_struct, NULL); // не работает, так как SIGSTOP поймать нельзя.
