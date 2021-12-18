@@ -15,14 +15,12 @@ void sig_handler(int signum) {
 }
 
 int main(void) {
-    printf("PID: %d\n", getpid());
+    printf("kill -s SIGKILL %d\n", getpid());
     struct sigaction sigact_struct = {
         .sa_handler = sig_handler,
-        // .sa_flags = SA_RESTART
-        .sa_flags = SA_SIGINFO
+        .sa_flags = SA_RESTART
     };
     sigemptyset(&sigact_struct.sa_mask);
-    // struct siginfo_t* info = calloc(1, sizeof(struct siginfo_t));
     #if 0
     sigaction(SIGINT, &sigact_struct, NULL);
     sigaction(SIGQUIT, &sigact_struct, NULL);
@@ -31,7 +29,7 @@ int main(void) {
     sigaction(SIGTSTP, &sigact_struct, NULL);// ctrl + Z
     #endif
     for(int signal = 1; signal <= NSIG; signal++) {
-        if(sigaction(signal, &sigact_struct, NULL)) {
+        if(sigaction(signal, &sigact_struct, NULL) == -1) {
             perror("sigaction");
             psignal(signal, NULL);
         }
