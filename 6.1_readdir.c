@@ -5,7 +5,7 @@
 #include <stdlib.h>
 
 
-char dtype_letter(unsigned d_type) {
+char dtype_char(unsigned d_type) {
     switch(d_type) {
         case DT_BLK: return 'b';
         case DT_CHR: return 'c';
@@ -19,7 +19,7 @@ char dtype_letter(unsigned d_type) {
 }
 
 
-char mode_letter(mode_t st_mode) {
+char mode_char(mode_t st_mode) {
     switch (st_mode & S_IFMT) {
         case S_IFBLK: return 'b'; 
         case S_IFCHR: return 'c';
@@ -38,18 +38,32 @@ int main(void) {
     if(!dir_fd) {
         return 1;
     }
-    struct dirent* entry;
-    char type = '?';
-    while((entry = readdir(dir_fd)) != NULL) {
-        type = dtype_letter(entry->d_type);
-        if(type == '?') {
+    
+    int errno;
+    while(1) {
+        errno = 0;
+        struct dirent *entry = readdir(dir_fd);
+        if(entry == NULL) {
+            if(errno == 0) {
+                break;
+            }
+            perror("readdir");
+            close(dir_fd);
+            return 2;
+        }
+
+        char entry_type = dtype_char(entry->d_type);
+
+        if(entry_type == '?') {
             struct stat sb;
             if(lstat(entry->d_name, &sb) == 0) {
-                type = mode_letter(sb.st_mode);
+                entry_type = mode_char(sb.st_mode);
             }
         }
-        printf("%c %s\n", type, entry->d_name);
+        printf("%c %s \n", entry_type, entry->d_name);
     }
+
     closedir(dir_fd);
+    
     return 0;
 }
