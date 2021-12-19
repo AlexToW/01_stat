@@ -56,8 +56,7 @@ void handle_event(int fd, const char* pathname) {
                     printf("IN_MOVEED_TO: %s/%s", pathname, event->name);
                 }
             } else if (event->mask & IN_CREATE) {
-                if (event->len)
-                    printf("IN_CREATE: %s/%s", pathname, event->name);
+                printf("IN_CREATE: %s/%s", pathname, event->name);
             }
             if (event->mask & IN_ISDIR) {
                 printf("\t(directory)\n");
