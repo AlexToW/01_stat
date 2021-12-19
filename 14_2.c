@@ -11,7 +11,7 @@
 #include <sys/types.h>
 #include <fcntl.h>
 
-
+// last | wc -l -- хотим такой конвеер
 
 int main(void) {
     int pipe_fds[2];
