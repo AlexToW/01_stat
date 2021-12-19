@@ -29,11 +29,36 @@ int main(void) {
     if(child_id == 0) {
         proc_info("child");
         sleep(1);
-        // this code is executed in child process onlly
+        // this code is executed in child process only
         proc_info("child");
+        #if 0
         kill(getpid(), SIGTERM);
-        return 0;
+        #endif
+    } else {
+        int status = 0;
+        waitpid(child_id, &status, WUNTRACED | WCONTINUED);
+
+        while(WIFEXITED(status) == 0 && WIFSIGNALED(status) == 0) {
+            if(WIFSTOPPED(status)) {
+                printf("Child process(PID=%d) was stopped with signal %d (%s)\n", child_id, WSTOPSIG(status), strsignal(WTERMSIG(status)));
+            }
+            if(WIFCONTINUED(status)) {
+                printf("Child process(PID:%d) continues to work\n", child_id);
+            }
+            waitpid(child_id, &status, WUNTRACED | WCONTINUED);
+        }
+
+        if(WIFEXITED(status)) {
+            printf("Child process(PID:%d) exited with code %d\n", child_id, WEXITSTATUS(status));
+        } else if(WIFSIGNALED(status)) {
+            int child_signal = WTERMSIG(status);
+            printf("Child process(PID:%d) was killed by signal %d (%s)\n", child_id, child_signal, WEXITSTATUS(child_signal));
+            if(WCOREDUMP(status)) {
+                printf("Core dump\n");
+            }
+        }
     }
+    #if 0
     // this code is executed in parent processes
     proc_info("parent");
     int status;
@@ -52,5 +77,6 @@ int main(void) {
         printf("child with PID = %d has exited with termination status %d\n", res, status);
     }
     // this code is executed in both processes
+    #endif
     return 0;
 }
