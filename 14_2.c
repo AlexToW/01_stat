@@ -1,5 +1,5 @@
 /*
-    14.1
+    14.2
 */ 
 #include <unistd.h>
 #include <sys/types.h>
@@ -28,19 +28,24 @@ int main(void) {
         return 2;
     }
 
-    
-    execlp(
-        // path to executable
-        //"grep", 
-        "grep"
-        // argv
-        "grep", argc > 1 ? argv[1] : "model name", "/proc/cpuinfo", NULL
-        );
+    if(child_id == 0) {
+        close(pipe_fds[0]);
 
-#if 0
-    printf("тест 2");
-    execlp("echo", "echo", "1", "abc", "тест", NULL);
-#endif
-    perror("failed to exec grep"); // так как в штатном случае execlp управление не возвращает
+        if(dup2(pipe_fds[1], fileno(stdout)) < 0) {
+            perror("dup2");
+            close(pipe_fds[1]);
+            return 3;
+        }
+        close(pipe_fds[1]);
+        execlp("last", "last", NULL);
+        // если вернуло управление, значит что-то не так
+        perror("execlp");
+        return 4;
+    }
+
+    close(pipe_fds[1]);
+    execlp("wc", "wc", "-l", NULL);
+    // если вернуло управление, значит что-то не так
+    perror("execlp wc -l");
     return 0;
 }
