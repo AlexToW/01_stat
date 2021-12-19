@@ -21,12 +21,14 @@ int main(void) {
     pthread_t threads[N_THREADS];
     for(int i = 0; i < N_THREADS; i++) {
         pthread_create(threads + i, NULL, &thread_foo, NULL);
+        pthread_join(threads[i], NULL);
     }
-
+    #if 0
     for(int i = 0; i < N_THREADS; i++) {
         errno = pthread_join(threads[i], NULL);
         printf("Current cnt = %d\n", cnt);
     }
+    #endif
     printf("Result is %d\n", cnt);
     return 0;
 }
