@@ -13,8 +13,22 @@
 
 
 
-int main(int argc, char* argv[]) {
-    // grep 'model name' /proc/cpuinfo -- хотим сделать так
+int main(void) {
+    int pipe_fds[2];
+    if(pipe(pipe_fds) < 0) {
+        perror("pipe");
+        return 1;
+    }
+
+    pid_t child_id = fork();
+    if(child_id < 0) {
+        perror("fork");
+        close(pipe_fds[0]);
+        close(pipe_fds[1]);
+        return 2;
+    }
+
+    
     execlp(
         // path to executable
         //"grep", 
