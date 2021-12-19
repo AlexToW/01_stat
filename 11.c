@@ -45,14 +45,13 @@ int main(void) {
         printf("currrent cnt-1: %d\n", cnt);
     #endif
     char* newcnt;
-    /*
+    
     if(asprintf(&newcnt, "%d", cnt) < 0) {
         perror("Failed to asprnitf");
         free(newcnt);
         fclose(file);
         return 4;
     }
-    */
 
     // записываем новое значение, затирая старое
     if(pwrite(fd, newcnt, strlen(newcnt), 0) == -1) {
