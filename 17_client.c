@@ -24,6 +24,9 @@ int main(int argc, char* argv[]) { // имя очереди и что в нее 
         result = 1;
     }
 
-    mq_close(queue_fd);
+    if(mq_close(queue_fd) < 0) {
+        perror("mq_close");
+        result = 2;
+    }
     return result;
 }
