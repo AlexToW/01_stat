@@ -36,7 +36,8 @@ int main(int argc, char* argv[]) {
         perror("lstat");
         return 2;
     }
-    if((sb.st_mode & S_IFMT) == S_IFREG) {
+    // if((sb.st_mode & S_IFMT) == S_IFREG) {
+    if(S_ISREG(sb.st_mode & S_IFMT)) {
         int in_fd = open(argv[1], O_RDONLY);
         if (in_fd == -1) {
             perror("File open error");
