@@ -4,6 +4,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <errno.h>
+#include <unistd.h>
+#include <fcntl.h>
 
 
 char dtype_letter(unsigned d_type) {
@@ -36,12 +38,17 @@ char mode_letter(mode_t st_mode) {
 
 int readdir_func(DIR* dir_fd) {
     struct dirent* entry;
+    int fd = dirfd(dir_fd);
+    if(dir_fd == NULL) {
+        perror("dirfd"); 
+        return 1;
+    }  
     char type = '?';
     while((entry = readdir(dir_fd)) != NULL) {
         type = dtype_letter(entry->d_type);
         if(type == '?') {
             struct stat sb;
-            if(lstat(entry->d_name, &sb) == 0) {
+            if(fstatat(fd, entry->d_name, &sb, AT_SYMLINK_NOFOLLOW) == 0) {
                 type = mode_letter(sb.st_mode);
             }
         }
