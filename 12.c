@@ -18,10 +18,6 @@
 #include <limits.h>
 
 
-#define NGROUPS 20
-#define DEBUG
-
-
 int main(void) {
     /*
         1. Process ID (getpid(2))
