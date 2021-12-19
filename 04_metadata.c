@@ -65,7 +65,7 @@ int copy_file(int src_fd, int dest_fd) {
 int copy_metadata(int src_fd, int dest_fd) {
     // fstat вместо stat
     struct stat sb_src;
-    if(stat(src_file, &sb_src) == 0) {
+    if(fstat(src_fd, &sb_src) == 0) {
         /* copy mode */
         if(fchmod(dest_fd, sb_src.st_mode & ALLPERMS) != 0) {
             return 1;
@@ -106,7 +106,7 @@ int main(int argc, char* argv[]) {
         perror("File close error");
         return 6;
     }
-    if(copy_metadata(argv[1], out_fd) != 0) {
+    if(copy_metadata(in_fd, out_fd) != 0) {
         perror("Metadata copy failure");
         return 5;
     }
